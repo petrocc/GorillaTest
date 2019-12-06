@@ -1,7 +1,29 @@
-This is a repo for the GorillaLogic recruiting test. 
+####
+#### This is a repo for the GorillaLogic recruiting test.
+#### 
 
-Please use anything you find in here ethically--meaning if you're taking the GorillaLogic test figure it out for yourself. 
+# NOTICE TO PUBLIC:
+Please use anything you find in here ethically--meaning if you're taking
+the GorillaLogic test figure it out for yourself.
 
-Actually, if you want the job it's probably not a great idea do use what I've written here, as this is my first time at all of this stuff. 
+Actually, if you want the job it's probably not a great idea do use what
+I've written here, as this is my first time at all of this stuff.
 
-Good luck.
+
+Note that is my first time, outside of a classroom environment, building
+anything in a public cloud.
+
+This was done in Bash, because I had to figure out what I was doing as I went.
+I would have preferred to use either SaltStack or Terraform, but I didn't have
+the time to implement the former, and I don't know terraform at all.
+
+
+Basic architecture:
+
+* An Amazon t2.micro instance running Ubuntu 18.04 (LTS) in a VPC with a /27 
+IP range. 
+
+* Does not use an Elastic IP address (I would do that for a "production" 
+instance, and associate it with a DNS entry, which was not done)
+* Having a LOT of trouble with the application.
+* All the work is done in the  CreateVPC.sh script.
