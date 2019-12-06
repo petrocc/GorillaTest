@@ -20,15 +20,36 @@ the time to implement the former, and I don't know terraform at all.
 
 Basic architecture:
 
-* An Amazon t2.micro instance running Ubuntu 18.04 (LTS) in a VPC with a /27 
-IP range. 
++--[VPC]----------------------+
+| +----[subnet]----------+    |<->[GATEWAY for port 22, 3000]
+| |                      |    |   [Port 22 open to "my" subnet]
+| | +-Docker Container-+ |    |   [Port 3000 open to 0.0.0.0/0]
+| | |                  | |    |
+| | +------------------+ |    |
+| +----------------------+    |
++-----------------------------+
+
+* An Amazon t2.micro instance running Ubuntu 18.04 (LTS) in a VPC with a /24 
+IP range, and a subnet with a /25 off that. It could go smaller. 
 
 * Does not use an Elastic IP address (I would do that for a "production" 
 instance, and associate it with a DNS entry, which was not done)
-* Having a LOT of trouble with the application.
+* Application is run in a docker instance because building it in the 
+  main instance wasn't working. 
 * All the work is done in the  CreateVPC.sh script.
+  [] But it does call a "docker_build.sh" script. 
 
 
+Not done, for lack of time:
+1) Docker file need to mount persistent storage so the app can be
+   upgraded and backed up. 
+2) Need method to signal instance to back up sqlite file and rebuild
+   container for new code. 
+
+
+I would have preferred to do most of this in Terraform or SaltStack, but
+I don't know Terraform at all, and SaltStack is a bit heavy weight. Bash
+was all I had time for.
 
 
 
