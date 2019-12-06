@@ -88,7 +88,7 @@ done
 echo "Waiting for Instance Status to be 'ok' Go get \${DRINK_OF_CHOICE}"
 sleep 30
 status=''
-while ! [ ${status} == 'ok' ];
+while  [ "${status}" != 'ok' ];
 do
     status=$(aws ec2 describe-instance-status --instance-id ${i_id} | jq -r '.InstanceStatuses | .[0].InstanceStatus.Status')
     echo "Status: $status "
@@ -102,7 +102,7 @@ ssh_log=${dt}.ssh_log
 
 ssh -o StrictHostKeyChecking=accept-new -i GorillaTest.pem ubuntu@${public_ip} "hostname" | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} "sleep 10; sudo apt update 2>&1 " | tee -a ${ssh_log}
-ssh -i GorillaTest.pem ubuntu@${public_ip} sudo apt -y upgrade 2>&1 | tee -a ${ssh_log}
+ssh -i GorillaTest.pem ubuntu@${public_ip} "export DEBIAN_FRONTEND=noninteractive; sudo -Eapt-get -qy upgrade 2>&1" | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} git clone https://github.com/petrocc/application.git 2>&1 | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} git clone https://github.com/petrocc/GorillaTest.git 2>&1 | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} bash GorillaTest/docker_build.sh 2>&1 | tee -a ${ssh_log}
