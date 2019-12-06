@@ -48,10 +48,10 @@ aws ec2 authorize-security-group-ingress --group-id ${sg_id} --protocol tcp --po
     # Centurylink likes to reallocate IPs sometimes.
 echo "ssh"
 # HTTPS:
-echo "https"
-aws ec2 authorize-security-group-ingress --group-id ${sg_id} --protocol tcp --port 443 --cidr 0.0.0.0/0 2>&1 >>  ${log_dir}/authorize-security-group-ingress
-echo "http"
-aws ec2 authorize-security-group-ingress --group-id ${sg_id} --protocol tcp --port 80 --cidr 0.0.0.0/0 2>&1 >>   ${log_dir}/authorize-security-group-ingress
+#echo "https"
+#aws ec2 authorize-security-group-ingress --group-id ${sg_id} --protocol tcp --port 443 --cidr 0.0.0.0/0 2>&1 >>  ${log_dir}/authorize-security-group-ingress
+echo "port 3000"
+aws ec2 authorize-security-group-ingress --group-id ${sg_id} --protocol tcp --port 3000 --cidr 0.0.0.0/0 2>&1 >>   ${log_dir}/authorize-security-group-ingress
 echo "create_route_table"
 
 aws ec2 create-route-table --vpc-id ${vpc_id} 2>&1 >>  ${log_dir}/create-route-table
@@ -88,7 +88,7 @@ done
 echo "Waiting for Instance Status to be 'ok' Go get \${DRINK_OF_CHOICE}"
 sleep 30
 status=''
-while ![ ${status} == 'ok' ];
+while ! [ ${status} == 'ok' ];
 do
     status=$(aws ec2 describe-instance-status --instance-id ${i_id} | jq -r '.InstanceStatuses | .[0].InstanceStatus.Status')
     echo "Status: $status "
@@ -105,7 +105,6 @@ ssh -i GorillaTest.pem ubuntu@${public_ip} "sleep 10; sudo apt update 2>&1 " | t
 ssh -i GorillaTest.pem ubuntu@${public_ip} sudo apt -y upgrade 2>&1 | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} git clone https://github.com/petrocc/application.git 2>&1 | tee -a ${ssh_log}
 ssh -i GorillaTest.pem ubuntu@${public_ip} git clone https://github.com/petrocc/GorillaTest.git 2>&1 | tee -a ${ssh_log}
-ssh -i GorillaTest.pem ubuntu@${public_ip} "sudo wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash 2>&1" | tee -a ${ssh_log}
-ssh -i GorillaTest.pem ubuntu@${public_ip} "nvm install 6" 2>&1 | tee -a ${ssh_log}
+ssh -i GorillaTest.pem ubuntu@${public_ip} bash GorillaTest/docker_build.sh 2>&1 | tee -a ${ssh_log}
 
 echo -e "Instance ID=${i_id}\nIP=${public_ip}" | tee last_instance
